@@ -34,6 +34,8 @@ pub struct SearchRequest {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BrowsePage {
     pub total: Option<u32>,
+    pub page: u32,
+    pub per_page: u32,
     pub has_next_page: bool,
     pub results: Vec<SearchResult>,
 }
@@ -126,6 +128,8 @@ pub fn parse_browse_json(input: &str, base_url: &Url) -> Result<BrowsePage> {
 
     Ok(BrowsePage {
         total: Some(response.num_found),
+        page: response.page,
+        per_page,
         has_next_page,
         results,
     })
@@ -255,13 +259,17 @@ pub fn parse_browse_html(html: &str, base_url: &Url) -> Result<BrowsePage> {
         return Err(parse_error("browse table did not contain result rows"));
     }
 
+    let results = rows
+        .into_iter()
+        .map(|row| parse_row(row, base_url))
+        .collect::<Result<Vec<_>>>()?;
+
     Ok(BrowsePage {
         total,
+        page: 1,
+        per_page: results.len() as u32,
         has_next_page: has_next_page(&document)?,
-        results: rows
-            .into_iter()
-            .map(|row| parse_row(row, base_url))
-            .collect::<Result<Vec<_>>>()?,
+        results,
     })
 }
 

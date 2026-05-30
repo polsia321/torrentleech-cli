@@ -9,11 +9,29 @@ use serde::Serialize;
 use crate::model::{SearchResponse, SearchResult, TorrentDetails};
 
 pub fn render_search_compact(response: &SearchResponse, now: OffsetDateTime) -> Result<String> {
-    if response.results.is_empty() {
-        return Ok(String::new());
-    }
+    let total = response
+        .total
+        .map_or_else(|| "?".to_string(), |value| value.to_string());
+    let more_on_page = response.results.len() < response.page_results as usize;
+    let next_page = if response.has_next_page {
+        response
+            .page
+            .checked_add(1)
+            .map_or_else(|| "-".to_string(), |page| page.to_string())
+    } else {
+        "-".to_string()
+    };
 
-    let mut lines = Vec::with_capacity(response.results.len());
+    let mut lines = Vec::with_capacity(response.results.len() + 1);
+    lines.push(format!(
+        "total={total} page={} page_results={} limit={} showing={} more_on_page={} next_page={next_page}",
+        response.page,
+        response.page_results,
+        response.limit,
+        response.results.len(),
+        more_on_page
+    ));
+
     for result in &response.results {
         let category = result.category.as_deref().unwrap_or("-");
         let size = result.size.as_deref().unwrap_or("-");
@@ -97,6 +115,9 @@ struct StableSearchResponse<'a> {
     query: &'a Option<String>,
     page: u32,
     total: Option<u32>,
+    page_results: u32,
+    limit: u32,
+    has_next_page: bool,
     results: Vec<StableSearchResult<'a>>,
 }
 
@@ -106,6 +127,9 @@ impl<'a> From<&'a SearchResponse> for StableSearchResponse<'a> {
             query: &response.query,
             page: response.page,
             total: response.total,
+            page_results: response.page_results,
+            limit: response.limit,
+            has_next_page: response.has_next_page,
             results: response
                 .results
                 .iter()

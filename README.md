@@ -217,7 +217,15 @@ tl search ubuntu --category movies --freeleech --limit 25 --page 2 --sort seeder
 tl search ubuntu --json
 ```
 
-`--sort` accepts `added`, `size`, `seeders`, `leechers`, `completed`, `comments`, and `name`. `--order` accepts `asc` and `desc`. `--limit` defaults to config `default_limit`, then 10, and must be at most 100. Zero-result searches exit successfully and print nothing in compact mode.
+`--sort` accepts `added`, `size`, `seeders`, `leechers`, `completed`, `comments`, and `name`. `--order` accepts `asc` and `desc`. `--limit` defaults to config `default_limit`, then 10, and must be at most 100.
+
+Compact output starts with a metadata line:
+
+```text
+total=7349 page=1 page_results=20 limit=3 showing=3 more_on_page=true next_page=2
+```
+
+`page_results` is the number of results on the current TorrentLeech page. `limit` controls how many of that page are printed. If `more_on_page` is true, rerun the same search with a higher `--limit` to see more from the same page. If `next_page` is not `-`, rerun with `--page` set to that value to browse the next page.
 
 ## Show
 

@@ -6,6 +6,9 @@ pub struct SearchResponse {
     pub query: Option<String>,
     pub page: u32,
     pub total: Option<u32>,
+    pub page_results: u32,
+    pub limit: u32,
+    pub has_next_page: bool,
     pub results: Vec<SearchResult>,
 }
 

@@ -105,6 +105,9 @@ fn shared_models_serialize_with_stable_field_names() {
         query: None,
         page: 1,
         total: Some(1),
+        page_results: 1,
+        limit: 10,
+        has_next_page: false,
         results: vec![SearchResult {
             id: 1,
             title: "example".to_string(),

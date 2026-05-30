@@ -48,41 +48,29 @@ fn fetch_search(
     categories: Vec<u32>,
     limit: u32,
 ) -> Result<SearchResponse> {
-    let mut page = args.page;
-    let mut total = None;
-    let mut results = Vec::new();
+    let request = SearchRequest {
+        query: args.query.clone(),
+        categories,
+        freeleech: args.freeleech,
+        page: args.page,
+        sort: args.sort,
+        order: args.order,
+    };
+    let url = build_search_list_url(&context.config.base_url, &request)?;
+    let body = client.get_text(url.as_str())?;
+    let browse_page = parse_browse_json(&body, &context.config.base_url)?;
 
-    loop {
-        let request = SearchRequest {
-            query: args.query.clone(),
-            categories: categories.clone(),
-            freeleech: args.freeleech,
-            page,
-            sort: args.sort,
-            order: args.order,
-        };
-        let url = build_search_list_url(&context.config.base_url, &request)?;
-        let body = client.get_text(url.as_str())?;
-        let browse_page = parse_browse_json(&body, &context.config.base_url)?;
-        if total.is_none() {
-            total = browse_page.total;
-        }
-        results.extend(browse_page.results);
-
-        if results.len() >= limit as usize || !browse_page.has_next_page {
-            break;
-        }
-        page = page
-            .checked_add(1)
-            .ok_or_else(|| TlError::new(ErrorKind::InvalidInput, "page number is too large"))?;
-    }
-
+    let page_results = browse_page.results.len() as u32;
+    let mut results = browse_page.results;
     results.truncate(limit as usize);
 
     Ok(SearchResponse {
         query: args.query.clone(),
-        page: args.page,
-        total,
+        page: browse_page.page,
+        total: browse_page.total,
+        page_results,
+        limit,
+        has_next_page: browse_page.has_next_page,
         results,
     })
 }

@@ -59,7 +59,7 @@ fn zero_json() -> &'static str {
 }
 
 #[test]
-fn search_fetches_pages_until_limit_and_truncates_output() {
+fn search_fetches_one_page_and_truncates_output() {
     let temp = tempdir().unwrap();
     let server = MockServer::start();
     let config_path = config_path(&temp, None);
@@ -71,13 +71,6 @@ fn search_fetches_pages_until_limit_and_truncates_output() {
         .respond_with(ResponseTemplate::new(200).set_body_string(browse_json(1, 20, 40, 1)))
         .expect(1)
         .mount(&server);
-    Mock::given(method("GET"))
-        .and(path(
-            "/torrents/browse/list/query/ubuntu/orderby/added/order/desc/page/2",
-        ))
-        .respond_with(ResponseTemplate::new(200).set_body_string(browse_json(21, 20, 40, 2)))
-        .expect(1)
-        .mount(&server);
 
     let assert = tl()
         .arg("--base-url")
@@ -87,15 +80,19 @@ fn search_fetches_pages_until_limit_and_truncates_output() {
         .arg("search")
         .arg("ubuntu")
         .arg("--limit")
-        .arg("25")
+        .arg("15")
         .assert()
         .success()
         .stderr("");
     let stdout = String::from_utf8(assert.get_output().stdout.clone()).unwrap();
-    assert_eq!(stdout.lines().count(), 25);
+    assert_eq!(stdout.lines().count(), 16);
+    assert_eq!(
+        stdout.lines().next().unwrap(),
+        "total=40 page=1 page_results=20 limit=15 showing=15 more_on_page=true next_page=2"
+    );
     assert!(stdout.contains("Ubuntu.Result.1"));
-    assert!(stdout.contains("Ubuntu.Result.25"));
-    assert!(!stdout.contains("Ubuntu.Result.26"));
+    assert!(stdout.contains("Ubuntu.Result.15"));
+    assert!(!stdout.contains("Ubuntu.Result.16"));
 }
 
 #[test]
@@ -122,7 +119,7 @@ fn search_uses_config_default_limit_when_flag_absent() {
         .assert()
         .success();
     let stdout = String::from_utf8(assert.get_output().stdout.clone()).unwrap();
-    assert_eq!(stdout.lines().count(), 3);
+    assert_eq!(stdout.lines().count(), 4);
 }
 
 #[test]
@@ -149,7 +146,7 @@ fn search_uses_builtin_default_limit_when_flag_and_config_are_absent() {
         .assert()
         .success();
     let stdout = String::from_utf8(assert.get_output().stdout.clone()).unwrap();
-    assert_eq!(stdout.lines().count(), 10);
+    assert_eq!(stdout.lines().count(), 11);
 }
 
 #[test]
@@ -178,7 +175,7 @@ fn search_rejects_limits_above_one_hundred_before_requesting() {
 }
 
 #[test]
-fn compact_search_with_zero_results_exits_success_with_empty_stdout() {
+fn compact_search_with_zero_results_prints_summary() {
     let temp = tempdir().unwrap();
     let server = MockServer::start();
     let config_path = config_path(&temp, None);
@@ -199,7 +196,7 @@ fn compact_search_with_zero_results_exits_success_with_empty_stdout() {
         .arg("nope")
         .assert()
         .success()
-        .stdout("")
+        .stdout("total=0 page=1 page_results=0 limit=10 showing=0 more_on_page=false next_page=-\n")
         .stderr("");
 }
 
@@ -239,6 +236,9 @@ fn json_search_prints_search_response_shape() {
     assert_eq!(value["query"], "ubuntu");
     assert_eq!(value["page"], 2);
     assert_eq!(value["total"], 1);
+    assert_eq!(value["page_results"], 1);
+    assert_eq!(value["limit"], 10);
+    assert_eq!(value["has_next_page"], false);
     assert_eq!(value["results"][0]["id"], 9);
     assert_eq!(value["results"][0]["title"], "Ubuntu.Result.9");
     assert_eq!(value["results"][0]["category_id"], 33);

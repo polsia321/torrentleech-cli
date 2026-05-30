@@ -32,6 +32,9 @@ fn compact_output_formats_age_thresholds() {
         query: Some("age".to_string()),
         page: 1,
         total: Some(6),
+        page_results: 5,
+        limit: 10,
+        has_next_page: true,
         results: vec![
             result(1, "minutes", "2026-05-29 11:01:00"),
             result(2, "hours", "2026-05-28 12:01:00"),
@@ -43,14 +46,18 @@ fn compact_output_formats_age_thresholds() {
 
     let output = render_search_compact(&response, now).unwrap();
     let lines: Vec<_> = output.lines().collect();
-    assert!(lines[0].contains("59m"));
-    assert!(lines[1].contains("23h"));
-    assert!(lines[2].contains("58d"));
-    assert!(lines[3].contains("22mo"));
-    assert!(lines[4].contains("2y"));
-    assert_eq!(lines[0], "1 59m s3 l4 1 GiB 0-day FL minutes");
-    assert!(!lines[0].contains("C:"));
-    assert!(!lines[0].contains("FREELEECH"));
+    assert!(lines[1].contains("59m"));
+    assert!(lines[2].contains("23h"));
+    assert!(lines[3].contains("58d"));
+    assert!(lines[4].contains("22mo"));
+    assert!(lines[5].contains("2y"));
+    assert_eq!(
+        lines[0],
+        "total=6 page=1 page_results=5 limit=10 showing=5 more_on_page=false next_page=2"
+    );
+    assert_eq!(lines[1], "1 59m s3 l4 1 GiB 0-day FL minutes");
+    assert!(!lines[1].contains("C:"));
+    assert!(!lines[1].contains("FREELEECH"));
 }
 
 #[test]
@@ -59,12 +66,15 @@ fn zero_results_produce_empty_compact_output() {
         query: None,
         page: 1,
         total: Some(0),
+        page_results: 0,
+        limit: 10,
+        has_next_page: false,
         results: Vec::new(),
     };
 
     assert_eq!(
         render_search_compact(&response, datetime!(2026-05-29 12:00 UTC)).unwrap(),
-        ""
+        "total=0 page=1 page_results=0 limit=10 showing=0 more_on_page=false next_page=-\n"
     );
 }
 
@@ -74,6 +84,9 @@ fn json_output_uses_stable_search_response_shape() {
         query: Some("ubuntu".to_string()),
         page: 2,
         total: Some(1),
+        page_results: 1,
+        limit: 10,
+        has_next_page: false,
         results: vec![result(1, "ubuntu", "2026-05-29 11:01:00")],
     };
 
@@ -82,6 +95,9 @@ fn json_output_uses_stable_search_response_shape() {
     assert_eq!(value["query"], "ubuntu");
     assert_eq!(value["page"], 2);
     assert_eq!(value["total"], 1);
+    assert_eq!(value["page_results"], 1);
+    assert_eq!(value["limit"], 10);
+    assert_eq!(value["has_next_page"], false);
     assert_eq!(value["results"][0]["id"], 1);
     assert_eq!(value["results"][0]["title"], "ubuntu");
     assert_eq!(value["results"][0]["category_id"], 33);
