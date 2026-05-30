@@ -7,6 +7,7 @@
 Download the archive for your platform from the latest GitHub release:
 
 - `tl-linux-x86_64.tar.gz`
+- `tl-linux-aarch64.tar.gz`
 - `tl-macos-aarch64.tar.gz`
 - `tl-windows-x86_64.zip`
 
