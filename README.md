@@ -2,6 +2,8 @@
 
 `torrentleech-cli` provides the `tl` command for searching, authenticating with, and downloading torrents from TorrentLeech.
 
+It is primarily designed for AI agents: output is compact, scriptable, and stable so agents can search, inspect, and pass IDs or paths between commands without hidden state.
+
 ## Installation
 
 Download the archive for your platform from the latest GitHub release:
