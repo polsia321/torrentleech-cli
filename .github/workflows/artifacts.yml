@@ -54,7 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends "${{ matrix.linker_package }}"
+          sudo apt-get install -y --no-install-recommends ${{ matrix.linker_package }}
 
       - name: Build
         shell: bash
