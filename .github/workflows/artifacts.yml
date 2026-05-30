@@ -32,14 +32,14 @@ jobs:
             binary: tl
             archive: tl-macos-aarch64.tar.gz
           - name: windows-x86_64
-            os: windows-latest
+            os: windows-2025
             target: x86_64-pc-windows-msvc
             binary: tl.exe
             archive: tl-windows-x86_64.zip
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -67,7 +67,7 @@ jobs:
           Compress-Archive -Path "dist/${{ matrix.binary }}" -DestinationPath "${{ matrix.archive }}" -Force
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}
           path: ${{ matrix.archive }}
@@ -79,7 +79,7 @@ jobs:
     needs: build
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
 
