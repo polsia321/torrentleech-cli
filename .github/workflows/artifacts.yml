@@ -27,7 +27,7 @@ jobs:
             binary: tl
             archive: tl-linux-aarch64.tar.gz
             linker: aarch64-linux-gnu-gcc
-            linker_package: gcc-aarch64-linux-gnu
+            linker_package: gcc-aarch64-linux-gnu libc6-dev-arm64-cross
           - name: macos-aarch64
             os: macos-14
             target: aarch64-apple-darwin
@@ -60,6 +60,7 @@ jobs:
         shell: bash
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.linker }}
+          CC_aarch64_unknown_linux_gnu: ${{ matrix.linker }}
         run: cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Package Unix artifact
