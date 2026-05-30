@@ -2,6 +2,52 @@
 
 `torrentleech-cli` provides the `tl` command for searching, authenticating with, and downloading torrents from TorrentLeech.
 
+## Installation
+
+Download the archive for your platform from the latest GitHub release:
+
+- `tl-linux-x86_64.tar.gz`
+- `tl-macos-aarch64.tar.gz`
+- `tl-windows-x86_64.zip`
+
+Linux:
+
+```bash
+mkdir -p ~/.local/bin
+curl -L https://github.com/polsia321/torrentleech-cli/releases/latest/download/tl-linux-x86_64.tar.gz \
+  | tar -xz
+install -m 755 tl ~/.local/bin/tl
+```
+
+macOS on Apple Silicon:
+
+```bash
+mkdir -p ~/.local/bin
+curl -L https://github.com/polsia321/torrentleech-cli/releases/latest/download/tl-macos-aarch64.tar.gz \
+  | tar -xz
+install -m 755 tl ~/.local/bin/tl
+```
+
+Make sure `~/.local/bin` is on `PATH`.
+
+Windows:
+
+1. Download `tl-windows-x86_64.zip`.
+2. Extract `tl.exe`.
+3. Put `tl.exe` in a directory on `PATH`.
+
+Build from source:
+
+```bash
+cargo install --git https://github.com/polsia321/torrentleech-cli.git --locked
+```
+
+Nix users can run the flake directly:
+
+```bash
+nix run github:polsia321/torrentleech-cli
+```
+
 ## Configuration
 
 Create a starter config:
