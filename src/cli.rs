@@ -13,6 +13,7 @@ const STYLES: Styles = Styles::styled()
 #[derive(Debug, Clone, Parser)]
 #[command(name = "tl")]
 #[command(about = "Command line client for TorrentLeech")]
+#[command(version = concat!("version ", env!("TL_COMMIT_SHA")))]
 #[command(styles = STYLES)]
 pub struct Cli {
     #[command(flatten)]

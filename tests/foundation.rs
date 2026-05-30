@@ -1,3 +1,4 @@
+use assert_cmd::Command;
 use clap::{CommandFactory, Parser};
 use torrentleech_cli::app::{DEFAULT_BASE_URL, RunConfig, TEST_BASE_URL};
 use torrentleech_cli::cli::{Cli, Commands, ConfigCommand};
@@ -23,6 +24,23 @@ fn top_level_help_lists_foundation_commands() {
     ] {
         assert!(help.contains(command), "missing {command} in help:\n{help}");
     }
+}
+
+#[test]
+fn version_includes_commit_sha() {
+    let output = Command::cargo_bin("tl")
+        .unwrap()
+        .arg("--version")
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        stdout.starts_with("tl version "),
+        "unexpected version: {stdout}"
+    );
+    assert!(stdout.trim_end().len() > "tl version ".len());
 }
 
 #[test]
