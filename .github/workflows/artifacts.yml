@@ -27,7 +27,7 @@ jobs:
             binary: tl
             archive: tl-macos-aarch64.tar.gz
           - name: windows-x86_64
-            os: windows-2025
+            os: windows-2025-vs2026
             target: x86_64-pc-windows-msvc
             binary: tl.exe
             archive: tl-windows-x86_64.zip
@@ -87,10 +87,12 @@ jobs:
           ls -la release
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: commit-${{ github.sha }}
-          name: ${{ github.sha }}
-          target_commitish: ${{ github.sha }}
-          files: release/*
-          make_latest: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release delete "commit-${{ github.sha }}" --cleanup-tag --yes || true
+          gh release create "commit-${{ github.sha }}" release/* \
+            --title "${{ github.sha }}" \
+            --target "${{ github.sha }}" \
+            --latest
