@@ -186,7 +186,7 @@ fn whoami_prints_username_from_authenticated_navigation() {
         .env("TL_PASSWORD_FILE", &password_file)
         .assert()
         .success()
-        .stdout("fixture-user\n")
+        .stdout("username: fixture-user\n")
         .stderr("");
 }
 

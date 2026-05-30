@@ -27,7 +27,7 @@ pub fn run(context: &AppContext, args: WhoamiArgs) -> Result<()> {
     let html = client.get_text("/")?;
     let username = parse_username(&html)?;
 
-    println!("{username}");
+    println!("username: {username}");
     Ok(())
 }
 
