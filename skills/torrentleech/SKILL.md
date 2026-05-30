@@ -82,7 +82,9 @@ Column order is ID, age, seeders, leechers, size, category, freeleech marker,
 and title. A compact search with no matches exits successfully and prints no
 rows.
 
-Use JSON when exact field names are needed:
+Prefer plain search output for normal chat tasks. It is already compact and
+readable. Use JSON only when a task genuinely needs exact field names for
+programmatic processing:
 
 ```bash
 tl search '<query>' --json
@@ -101,9 +103,8 @@ tl show 'https://www.torrentleech.org/download/12345/example.torrent'
 ```
 
 Default detail output contains a compact metadata block followed by description
-and NFO text when the page provides them. JSON includes `id`, `title`,
-`category`, `added`, `size`, `seeders`, `leechers`, `completed`, `uploader`,
-`tags`, `description`, `nfo`, and `download_url`.
+and NFO text when the page provides them. Use JSON details only when a task
+requires exact field names for programmatic processing.
 
 ## Downloading torrent files
 
@@ -174,7 +175,7 @@ tl config show --json
 
 `config init` creates a starter file without replacing an existing file.
 `config show` prints values from the config file, not resolved environment or
-flag overrides.
+flag overrides. Use `--json` only when a task needs structured config fields.
 
 ## Categories
 
@@ -184,8 +185,8 @@ Common groups are:
 movies, tv, games, apps, education, animation, books, music, foreign
 ```
 
-Run `tl categories` for IDs and aliases. Add `--json` for grouped structured
-output.
+Run `tl categories` for IDs and aliases. Plain output is preferred for normal
+chat tasks. Add `--json` only when grouped structured output is useful.
 
 ## Process results
 
