@@ -94,8 +94,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
+          {
+            echo "Automated build for commit ${{ github.sha }}."
+            echo
+            echo "## Recent commits"
+            git log --oneline --no-decorate -10 --format='- `%h` %s'
+          } > release-notes.md
+
           gh release delete "commit-${{ github.sha }}" --cleanup-tag --yes || true
           gh release create "commit-${{ github.sha }}" release/* \
             --title "${{ github.sha }}" \
+            --notes-file release-notes.md \
             --target "${{ github.sha }}" \
             --latest
