@@ -1,6 +1,6 @@
 ---
 name: torrentleech
-description: Reference for using the tl command with TorrentLeech: login, search, show details, download torrent files, and inspect configuration.
+description: Search TorrentLeech, inspect torrent details, download .torrent files, list categories, authenticate sessions, and inspect configuration with the tl CLI. Use when the user asks to find movies, TV, music, software, games, books, or other TorrentLeech torrents, needs a .torrent file, or wants metadata from TorrentLeech.
 ---
 
 # TorrentLeech CLI reference
