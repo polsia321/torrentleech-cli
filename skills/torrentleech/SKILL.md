@@ -49,6 +49,12 @@ Use `show` when a result needs confirmation:
 tl show <id> --description-only
 ```
 
+When presenting results to a user, number the visible choices `1`, `2`, `3`, and
+so on. Keep the real TorrentLeech IDs in your working context, but do not make
+the user refer to long IDs such as `241774912`. If the user replies with a small
+number, map it back to the matching TorrentLeech ID from the latest result list
+before running `show` or `download`.
+
 Save the selected `.torrent` file and capture the printed path:
 
 ```bash
@@ -81,6 +87,18 @@ Plain search output is one result per line:
 Column order is ID, age, seeders, leechers, size, category, freeleech marker,
 and title. A compact search with no matches exits successfully and prints no
 rows.
+
+For chat replies, rewrite the raw output into a numbered list that hides the raw
+TorrentLeech ID from the user:
+
+```text
+1. TL-0day MAY26-2026 - 2d - 6.8GiB - s111 l23 - Apps/0-day - FL
+2. Another result - 4d - 1.2GiB - s45 l5 - Movies/HD
+```
+
+Retain an internal mapping from each visible number to its TorrentLeech ID for
+follow-up commands. For example, if result `1` maps to `241774912` and the user
+says "download 1", run `tl download 241774912`, not `tl download 1`.
 
 Prefer plain search output for normal chat tasks. It is already compact and
 readable. Use JSON only when a task genuinely needs exact field names for
